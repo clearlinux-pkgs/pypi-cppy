@@ -4,14 +4,15 @@
 #
 Name     : pypi-cppy
 Version  : 1.2.0
-Release  : 4
+Release  : 5
 URL      : https://files.pythonhosted.org/packages/e0/94/3cca7fccecf9b63219f3bf8f08af719f6d3ab06c4acdcc9372a15a12b593/cppy-1.2.0.tar.gz
 Source0  : https://files.pythonhosted.org/packages/e0/94/3cca7fccecf9b63219f3bf8f08af719f6d3ab06c4acdcc9372a15a12b593/cppy-1.2.0.tar.gz
 Summary  : C++ headers for C extension development
 Group    : Development/Tools
 License  : BSD-3-Clause
-Requires: pypi-cppy-data = %{version}-%{release}
 Requires: pypi-cppy-license = %{version}-%{release}
+Requires: pypi-cppy-python = %{version}-%{release}
+Requires: pypi-cppy-python3 = %{version}-%{release}
 BuildRequires : buildreq-cmake
 BuildRequires : buildreq-distutils3
 BuildRequires : pypi(setuptools)
@@ -24,18 +25,9 @@ Cppy
 .. image:: https://github.com/nucleic/cppy/actions/workflows/ci.yml/badge.svg
 :target: https://github.com/nucleic/cppy/actions/workflows/ci.yml
 
-%package data
-Summary: data components for the pypi-cppy package.
-Group: Data
-
-%description data
-data components for the pypi-cppy package.
-
-
 %package dev
 Summary: dev components for the pypi-cppy package.
 Group: Development
-Requires: pypi-cppy-data = %{version}-%{release}
 Provides: pypi-cppy-devel = %{version}-%{release}
 Requires: pypi-cppy = %{version}-%{release}
 
@@ -51,6 +43,25 @@ Group: Default
 license components for the pypi-cppy package.
 
 
+%package python
+Summary: python components for the pypi-cppy package.
+Group: Default
+Requires: pypi-cppy-python3 = %{version}-%{release}
+
+%description python
+python components for the pypi-cppy package.
+
+
+%package python3
+Summary: python3 components for the pypi-cppy package.
+Group: Default
+Requires: python3-core
+Provides: pypi(cppy)
+
+%description python3
+python3 components for the pypi-cppy package.
+
+
 %prep
 %setup -q -n cppy-1.2.0
 cd %{_builddir}/cppy-1.2.0
@@ -60,9 +71,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1647014082
-mkdir -p clr-build
-pushd clr-build
+export SOURCE_DATE_EPOCH=1647020231
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -71,35 +80,36 @@ export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=auto "
 export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
 export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=auto "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=auto "
-%cmake ..
-make  %{?_smp_mflags}
-popd
+export MAKEFLAGS=%{?_smp_mflags}
+python3 -m build --wheel --skip-dependency-check --no-isolation
 
 %install
-export SOURCE_DATE_EPOCH=1647014082
+export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/pypi-cppy
 cp %{_builddir}/cppy-1.2.0/LICENSE %{buildroot}/usr/share/package-licenses/pypi-cppy/aaeb6aef24b11a94de50d8e9b2d6d1728c25a0e4
-pushd clr-build
-%make_install
-popd
+pip install --root=%{buildroot} --no-deps --ignore-installed dist/*.whl
+echo ----[ mark ]----
+cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
+echo ----[ mark ]----
 
 %files
 %defattr(-,root,root,-)
 
-%files data
-%defattr(-,root,root,-)
-/usr/share/cppy/cmake/cppyConfig.cmake
-/usr/share/cppy/cmake/cppyConfigVersion.cmake
-/usr/share/cppy/cmake/cppyTargets.cmake
-
 %files dev
 %defattr(-,root,root,-)
-/usr/include/cppy/cppy.h
-/usr/include/cppy/defines.h
-/usr/include/cppy/errors.h
-/usr/include/cppy/ptr.h
+/usr/lib/python3.10/site-packages/cppy/include/cppy/cppy.h
+/usr/lib/python3.10/site-packages/cppy/include/cppy/defines.h
+/usr/lib/python3.10/site-packages/cppy/include/cppy/errors.h
+/usr/lib/python3.10/site-packages/cppy/include/cppy/ptr.h
 
 %files license
 %defattr(0644,root,root,0755)
 /usr/share/package-licenses/pypi-cppy/aaeb6aef24b11a94de50d8e9b2d6d1728c25a0e4
+
+%files python
+%defattr(-,root,root,-)
+
+%files python3
+%defattr(-,root,root,-)
+/usr/lib/python3*/*

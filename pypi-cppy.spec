@@ -4,7 +4,7 @@
 #
 Name     : pypi-cppy
 Version  : 1.2.1
-Release  : 14
+Release  : 15
 URL      : https://files.pythonhosted.org/packages/c5/7e/6cc5acd93752ee52d2f0423046072a2ce3ae16dfcd44373b9fe2a0222204/cppy-1.2.1.tar.gz
 Source0  : https://files.pythonhosted.org/packages/c5/7e/6cc5acd93752ee52d2f0423046072a2ce3ae16dfcd44373b9fe2a0222204/cppy-1.2.1.tar.gz
 Summary  : UNKNOWN
@@ -74,7 +74,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1656367770
+export SOURCE_DATE_EPOCH=1666706737
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -99,7 +99,7 @@ popd
 export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/pypi-cppy
-cp %{_builddir}/cppy-1.2.1/LICENSE %{buildroot}/usr/share/package-licenses/pypi-cppy/aaeb6aef24b11a94de50d8e9b2d6d1728c25a0e4
+cp %{_builddir}/cppy-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/pypi-cppy/aaeb6aef24b11a94de50d8e9b2d6d1728c25a0e4 || :
 pip install --root=%{buildroot} --no-deps --ignore-installed dist/*.whl
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
@@ -119,10 +119,10 @@ popd
 
 %files dev
 %defattr(-,root,root,-)
-/usr/lib/python3.10/site-packages/cppy/include/cppy/cppy.h
-/usr/lib/python3.10/site-packages/cppy/include/cppy/defines.h
-/usr/lib/python3.10/site-packages/cppy/include/cppy/errors.h
-/usr/lib/python3.10/site-packages/cppy/include/cppy/ptr.h
+/usr/lib/python3.11/site-packages/cppy/include/cppy/cppy.h
+/usr/lib/python3.11/site-packages/cppy/include/cppy/defines.h
+/usr/lib/python3.11/site-packages/cppy/include/cppy/errors.h
+/usr/lib/python3.11/site-packages/cppy/include/cppy/ptr.h
 
 %files license
 %defattr(0644,root,root,0755)
